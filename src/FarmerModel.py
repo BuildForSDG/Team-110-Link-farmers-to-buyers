@@ -20,7 +20,13 @@ class User(db.Model):
     # setting default role to buyer if not farmer
     profile_picture = db.Column(db.String(80), default='profile.jpg')
     location = db.Column(db.String(80))
-    farm_id = db.Column(db.Integer, default='', unique=False, nullable=False)
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
+                        nullable=False)
+    # We should be able to see the farm a User belongs to through farm id
+    # even if the farm name and farm location is None for buyers
+    farm = db.relationship('Farm', backref=db.backref('users', lazy=True))
+    # I should be able to view all users belonging to a farm from the farmtable
+
     order = db.relationship('Order', backref='user_order', lazy=True)
 
     def json(self):
@@ -72,7 +78,7 @@ class User(db.Model):
             'Email': self.email,
             'profile_picture': self.profile_picture,
             'Farm_id': self.farm_id
-    }
+                       }
         return json.dumps(user_object)
 
 
@@ -136,4 +142,3 @@ class Order(db.Model):
     orders = db.Column(db.Text)
     # order_details = db.relationship('OrderDetails', backref='order_item')
     # false columns user_order exists
-
