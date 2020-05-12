@@ -4,7 +4,8 @@ from settings import app
 from FarmerModel import User, Farm, Order
 
 import json
-import jwt, datetime
+import jwt
+import datetime
 from functools import wraps
 
 bcrypt = Bcrypt(app)
@@ -12,7 +13,7 @@ app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
 
 '''
  {
-    "full_name" : "Adonis Chuck", 
+    "full_name" : "Adonis Chuck",
     "phone_number": "070XXXXXXXX",
     "email": "email@email.com",
     "password": "password"
