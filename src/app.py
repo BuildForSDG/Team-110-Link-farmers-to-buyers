@@ -67,8 +67,7 @@ def registerFarmer():
     else:
         invalidUserObjectErrorMsg = {
             "error": "Invalid Farmer object passed in request",
-            "helpString": "Data passed in similar to this"
-            "data": {'full_name': 'Adonis Chuck', 'phone_number': '070XXXX', 'email': 'email@email.com', 'password': 'password'}
+            "helpString": "Data passed in similar to this {'phone_number': '070XXXXXXXX', 'password': 'password'}"
                                     }
         response = Response(json.dumps(invalidUserObjectErrorMsg), status=400,
                             mimetype='application/json')
@@ -121,4 +120,47 @@ def user_profile(phone):
     return jsonify(return_value)
 
 
-app.run(debug=True)
+@app.route('\allusers', methods=['GET'])
+def all_users():
+    '''Function to get all users'''
+    return_value = User.getAllUsers()
+    return jsonify(return_value)
+
+
+@app.route('\edituser\<phone>', methods=['PUT'])
+def edit_user(phone):
+    '''Function to edit user's details with phone number as parameter'''
+    request_data = request.get_json()
+    full_name = request_data['full_name']
+    phone = request_data['phone_number']
+    password = request_data['password']
+    hash_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    profile_picture = request_data['profile_picture']
+    farm_id = request_data['farm_id']
+    email = request_data['email']
+    User.editUser(phone, full_name, password, profile_picture, farm_id, email)
+    return Response("Profile Successfully Updated", status=400,
+                    mimetype='application/json')
+
+
+@app.route('\deleteuser\<phone>', methods=['DELETE'])
+def delete_user(phone):
+    '''Function to delete user's profile with phone number as parameter'''
+    request_data = request.get_json()
+    phone = request_data['phone_number']
+    if (User.deleteUser(phone)):
+        response = Response("Account Deleted", status=204)
+        return response
+
+    invalidUserObjectErrorMsg = {
+        "error": "User with the phone number that was provided was not found"
+    }
+    response = Response(json.dumps(invalidUserObjectErrorMsg), status=404,
+                        mimetype='application/json')
+    return response
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+# app.run(debug=True)
