@@ -38,14 +38,14 @@ class User(db.Model):
                 }
 
     def add_User(_phone, _full_name, _password, _email):
-        '''fuction to add farmer to the database'''
+        '''fuction to add user to the database'''
         new_user = User(phone=_phone, full_name=_full_name,
                         password=_password, email=_email)
         db.session.add(new_user)  # add new user to database
         db.session.commit()   # committing changes
 
     def getAllUsers():
-        '''function to return all farmers in the database'''
+        '''function to view all users in the database'''
         return [User.json(i) for i in User.query.all()]
 
     def getUser(_phone):
