@@ -25,7 +25,8 @@ app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
 def validUserObjectRegistration(UserObject):
     '''Function that validates the Registration data sent to our API'''
     if ("phone_number" in UserObject and "password" in UserObject
-            and "full_name" in UserObject or "email" in UserObject):
+            and "full_name" in UserObject or "email" in UserObject
+                or "role" in UserObject):
         return True
     else:
         return False
@@ -66,6 +67,7 @@ def registerUser():
         full_name = str(request_data['full_name'])
         phone = str(request_data['phone_number'])
         email = str(request_data['email'])
+        role = str(request_data['role'])
         #  encrypting password
         password = str(request_data['password'])
         hash_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -73,7 +75,7 @@ def registerUser():
         #  check if someone already registered with that phone number
         phoneExist = User.query.filter_by(phone=phone).first()
         if not phoneExist:
-            User.add_User(phone, full_name, hash_password, email)
+            User.add_User(phone, full_name, hash_password, email, role)
             # add new user to database if phone number isn't used
             response = Response("New User added!", 201,
                                 mimetype='application/json')

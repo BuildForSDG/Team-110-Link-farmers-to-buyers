@@ -35,7 +35,7 @@ class User(db.Model):
                 'profile_picture': self.profile_picture,
                 'Farm_name': self.farm_name,
                 'Farm_Location': self.farm_location,
-                'Role': : self.role
+                'Role': self.role
                 }
 
     def add_User(_phone, _full_name, _password, _email, _role):
