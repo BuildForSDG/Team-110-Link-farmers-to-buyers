@@ -34,13 +34,14 @@ class User(db.Model):
                 'Phone_number': self.phone, 'Email': self.email,
                 'profile_picture': self.profile_picture,
                 'Farm_name': self.farm_name,
-                'Farm_Location': self.farm_location
+                'Farm_Location': self.farm_location,
+                'Role': : self.role
                 }
 
-    def add_User(_phone, _full_name, _password, _email):
+    def add_User(_phone, _full_name, _password, _email, _role):
         '''fuction to add user to the database'''
         new_user = User(phone=_phone, full_name=_full_name,
-                        password=_password, email=_email)
+                        password=_password, email=_email, role=_role)
         db.session.add(new_user)  # add new user to database
         db.session.commit()   # committing changes
 
@@ -76,6 +77,7 @@ class User(db.Model):
             'full_name': self.full_name,
             'Phone_number': self.phone,
             'Email': self.email,
+            'Role': self.role,
             'profile_picture': self.profile_picture,
             'Farm_id': self.farm_id
                        }

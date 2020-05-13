@@ -1,6 +1,6 @@
 from flask import Flask, request, Response, jsonify
 from flask_bcrypt import Bcrypt  # hashing password
-from settings import app
+from settings import *
 from FarmerModel import User, Farm, Order
 
 import json
