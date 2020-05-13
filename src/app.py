@@ -25,8 +25,8 @@ app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
 def validUserObjectRegistration(UserObject):
     '''Function that validates the Registration data sent to our API'''
     if ("phone_number" in UserObject and "password" in UserObject
-            and "full_name" in UserObject or "email" in UserObject
-                or "role" in UserObject):
+            and "full_name" in UserObject and "email" in UserObject
+                and "role" in UserObject):
         return True
     else:
         return False
@@ -258,7 +258,7 @@ def addFarm():
                                 mimetype='application/json')
             # get id of new farm
             f = Farm.query.filter_by(farm_name=farm_name).filter_by(farm_location=farm_location).first()
-            response.headers['Location'] = "/farm/" + f.id
+            response.headers['Location'] = "/farm/" + str(f.id)
             return response
         else:
             return Response("Farm Exists Already", status=400,

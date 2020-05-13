@@ -9,7 +9,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     '''User class with table user'''
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     full_name = db.Column(db.String(80), nullable=False)
     phone = db.Column(db.String(11), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
@@ -21,13 +21,13 @@ class User(db.Model):
     profile_picture = db.Column(db.String(80), default='profile.jpg')
     location = db.Column(db.String(80))
     farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
-                        nullable=False)
+                        nullable=True)
     # We should be able to see the farm a User belongs to through farm id
     # even if the farm name and farm location is None for buyers
     farm = db.relationship('Farm', backref=db.backref('users', lazy=True))
     # I should be able to view all users belonging to a farm from the farmtable
 
-    order = db.relationship('Order', backref='user_order', lazy=True)
+    # order = db.relationship('Order', backref='user_order', lazy=True)
 
     def json(self):
         return {'id': self.id, 'full_name': self.full_name,
@@ -41,7 +41,9 @@ class User(db.Model):
     def add_User(_phone, _full_name, _password, _email, _role):
         '''fuction to add user to the database'''
         new_user = User(phone=_phone, full_name=_full_name,
-                        password=_password, email=_email, role=_role)
+                        password=_password, email=_email, role=_role,
+                        farm_id=1)
+        # setting farm id to be 1, which is None
         db.session.add(new_user)  # add new user to database
         db.session.commit()   # committing changes
 
@@ -87,7 +89,7 @@ class User(db.Model):
 class Farm(db.Model):
     '''Farm class with table farm'''
     __tablename__ = 'farm'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     farm_name = db.Column(db.String(80))
     farm_location = db.Column(db.String(80))
 
