@@ -8,6 +8,7 @@ import jwt
 import datetime
 from functools import wraps
 
+
 bcrypt = Bcrypt(app)
 app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
 
@@ -19,7 +20,6 @@ app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
     "password": "password"
  }
 '''
-
 
 # Creating a validation Object for requests sent by client
 def validUserObjectRegistration(UserObject):
@@ -241,6 +241,14 @@ def validFarmObjectEdit(FarmObject):
         return False
 
 
+def validFarmObjectFarmSearch(FarmObject):
+    '''Function that validates the Farm name search data sent to our API'''
+    if ("farm_name" in FarmObject):
+        return True
+    else:
+        return False
+
+
 @app.route('/addfarm', methods=['GET', 'POST'])
 def addFarm():
     '''Function to add new farm'''
@@ -250,14 +258,16 @@ def addFarm():
         farm_location = str(request_data['farm_location'])
 
         #  check if someone already registered with that phone number
-        farmExist = Farm.query.filter_by(farm_name=farm_name).filter_by(farm_location=farm_location).first()
+        farmExist = Farm.query.filter_by(farm_name=farm_name)
+        farmExist = farmExist.filter_by(farm_location=farm_location).first()
         if not farmExist:  # if farm doesn't exist
             Farm.add_Farm(farm_name, farm_location)
             # add new farm to database if it doesn't exist
             response = Response("New Farm added!", 201,
                                 mimetype='application/json')
             # get id of new farm
-            f = Farm.query.filter_by(farm_name=farm_name).filter_by(farm_location=farm_location).first()
+            f = Farm.query.filter_by(farm_name=farm_name)
+            f = f.filter_by(farm_location=farm_location).first()
             response.headers['Location'] = "/farm/" + str(f.id)
             return response
         else:
@@ -282,25 +292,32 @@ def all_farms():
     return jsonify(return_value)
 
 
-@app.route('/farm/<farm_id>', methods=['GET'])
+@app.route('/farm/<int:farm_id>', methods=['GET'])
 def farm_detail(farm_id):
     '''Function to view a farm detail from farm_id'''
+    return_value = Farm.getFarm(farm_id)
+    return jsonify(return_value)
+
+
+@app.route('/searchfarm', methods=['GET'])
+def farm_search():
+    '''Function to view a farm detail from farm_id'''
     request_data = request.get_json()
-    if (validFarmObjectDelete(request_data)):
-        farm_id = int(request_data['farm_id'])
-        return_value = Farm.getFarm(farm_id)
+    if (validFarmObjectFarmSearch(request_data)):
+        farm_name = str(request_data['farm_name'])
+        return_value = Farm.searchFarm(farm_name)
         return jsonify(return_value)
     else:
         invalidFarmObjectErrorMsg = {
-            "error": "Invalid details passed in request",
-            "helpString": "Data passed should be {'farm_id': 4}"
+            "error": "Invalid Farm details passed in request",
+            "helpString": {'farm_name': 'XX'}
                                     }
-        response = Response(json.dumps(invalidFarmObjectErrorMsg), status=400,
-                            mimetype='application/json')
+        response = Response(json.dumps(invalidFarmObjectErrorMsg),
+                            status=400, mimetype='application/json')
         return response
 
 
-@app.route('/editfarm/<farm_id>', methods=['PUT'])
+@app.route('/editfarm/<int:farm_id>', methods=['PUT'])
 def edit_user(farm_id):
     '''Function to edit a farm's details with farm_id as parameter'''
     request_data = request.get_json()

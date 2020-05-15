@@ -22,20 +22,20 @@ class User(db.Model):
     location = db.Column(db.String(80))
     farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
                         nullable=True)
-    # We should be able to see the farm a User belongs to through farm id
-    # even if the farm name and farm location is None for buyers
-    farm = db.relationship('Farm', backref=db.backref('users', lazy=True))
-    # I should be able to view all users belonging to a farm from the farmtable
+    
+    farm = db.relationship('Farm', backref=db.backref('users', lazy=True), foreign_keys=[farm_id])
+    
 
     # order = db.relationship('Order', backref='user_order', lazy=True)
 
     def json(self):
         return {'id': self.id, 'full_name': self.full_name,
                 'Phone_number': self.phone, 'Email': self.email,
-                'profile_picture': self.profile_picture,
-                'Farm_name': self.farm_name,
-                'Farm_Location': self.farm_location,
-                'Role': self.role
+                'profile_picture': self.profile_picture, 'Role': self.role,
+                'password': self.password, 'location': self.location,
+                'Farm_name': self.farm.farm_name,
+                'Farm_Location': self.farm.farm_location
+
                 }
 
     def add_User(_phone, _full_name, _password, _email, _role):
@@ -43,7 +43,8 @@ class User(db.Model):
         new_user = User(phone=_phone, full_name=_full_name,
                         password=_password, email=_email, role=_role,
                         farm_id=1)
-        # setting farm id to be 1, which is None
+        # setting farm id to be 1, which is None for all new users
+        # it can be change when they edit their profile
         db.session.add(new_user)  # add new user to database
         db.session.commit()   # committing changes
 
@@ -81,7 +82,8 @@ class User(db.Model):
             'Email': self.email,
             'Role': self.role,
             'profile_picture': self.profile_picture,
-            'Farm_id': self.farm_id
+            'Farm_id': self.farm_id,
+            'Location': self.location
                        }
         return json.dumps(user_object)
 
@@ -92,6 +94,7 @@ class Farm(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     farm_name = db.Column(db.String(80))
     farm_location = db.Column(db.String(80))
+
 
     def json(self):
         return {'id': self.id, 'Farm name': self.farm_name,
@@ -107,6 +110,10 @@ class Farm(db.Model):
         '''function to return all farms in the database'''
         return [Farm.json(i) for i in Farm.query.all()]
 
+    def searchFarm(_farm_name):
+        '''function to get a farm detail using id as parameter'''
+        return [Farm.json(i) for i in Farm.query.filter_by(farm_name=_farm_name).all()]
+        
     def getFarm(_id):
         '''function to get a farm detail using id as parameter'''
         return Farm.json(Farm.query.filter_by(id=_id).first())
