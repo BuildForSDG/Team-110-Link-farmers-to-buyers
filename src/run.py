@@ -136,7 +136,7 @@ def login():
         return response
 
 
-@app.route('/user/<phone>', methods=['GET'])
+@app.route('/user', methods=['GET'])
 def user_profile(phone):
     '''Function to view a user's profile from phone number'''
     request_data = request.get_json()
@@ -154,6 +154,24 @@ def user_profile(phone):
         return response
 
 
+@app.route('/farmusers', methods=['GET'])  # test this
+def farm_users():
+    '''Function to view a farmers in a farm from farm id sent as a request'''
+    request_data = request.get_json()
+    if (validFarmObjectDelete(request_data)):
+        farm_id = int(request_data['farm_id'])
+        return_value = Farm.getFarmUser(farm_id)
+        return jsonify(return_value)
+    else:
+        invalidUserObjectErrorMsg = {
+            "error": "Invalid details passed in request",
+            "helpString": "Data passed should be {'farm_id': 3}"
+                                    }
+        response = Response(json.dumps(invalidUserObjectErrorMsg),
+                            status=400, mimetype='application/json')
+        return response
+
+
 @app.route('/allusers', methods=['GET'])
 def all_users():
     '''Function to get all users'''
@@ -161,7 +179,7 @@ def all_users():
     return jsonify(return_value)
 
 
-@app.route('/edituser/<phone>', methods=['PUT'])
+@app.route('/edituser', methods=['PUT'])
 def editUser(phone):
     '''Function to edit user's details with phone number as parameter'''
     request_data = request.get_json()
@@ -191,7 +209,7 @@ def editUser(phone):
         return response
 
 
-@app.route('/deleteuser/<phone>', methods=['DELETE'])
+@app.route('/deleteuser', methods=['DELETE'])
 def delete_user(phone):
     '''Function to delete user's profile with phone number as parameter'''
     request_data = request.get_json()
@@ -317,8 +335,8 @@ def farm_search():
         return response
 
 
-@app.route('/editfarm/<int:farm_id>', methods=['PUT'])
-def edit_user(farm_id):
+@app.route('/editfarm', methods=['PUT'])
+def edit_user():
     '''Function to edit a farm's details with farm_id as parameter'''
     request_data = request.get_json()
     if (validFarmObjectEdit(request_data)):
@@ -339,8 +357,8 @@ def edit_user(farm_id):
         return response
 
 
-@app.route('/deletefarm/<farm_id>', methods=['DELETE'])
-def delete_farm(farm_id):
+@app.route('/deletefarm', methods=['DELETE'])
+def delete_farm():
     '''Function to delete a farm using farm_id'''
     request_data = request.get_json()
     if (validFarmObjectDelete(request_data)):
