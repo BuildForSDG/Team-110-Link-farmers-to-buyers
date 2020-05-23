@@ -1,7 +1,8 @@
 from flask import Flask, request, Response, jsonify
 from flask_bcrypt import Bcrypt  # hashing password
 from settings import *
-from FarmerModel import User, Farm, Order
+
+from OrderItem import *
 
 import json
 import jwt
@@ -20,6 +21,7 @@ app.config['SECRET_KEY'] = 'cb6586bafe53ec6fba3db37e147c0955'
     "password": "password"
  }
 '''
+
 
 # Creating a validation Object for requests sent by client
 def validUserObjectRegistration(UserObject):
@@ -88,7 +90,8 @@ def registerUser():
     else:
         invalidUserObjectErrorMsg = {
             "error": "Invalid User object passed in request",
-            "helpString": {'phone_number': '070XXXXXXXX',
+            "helpString": {'full_name': 'your_name',
+                           'phone_number': '070XXXXXXXX',
                            'password': 'password'}
                                     }
         response = Response(json.dumps(invalidUserObjectErrorMsg), status=400,
@@ -137,7 +140,7 @@ def login():
 
 
 @app.route('/user', methods=['GET'])
-def user_profile(phone):
+def user_profile():
     '''Function to view a user's profile from phone number'''
     request_data = request.get_json()
     if (validUserObjectDelete(request_data)):
@@ -180,7 +183,7 @@ def all_users():
 
 
 @app.route('/edituser', methods=['PUT'])
-def editUser(phone):
+def editUser():
     '''Function to edit user's details with phone number as parameter'''
     request_data = request.get_json()
     if (validUserObjectEdit(request_data)):
@@ -210,7 +213,7 @@ def editUser(phone):
 
 
 @app.route('/deleteuser', methods=['DELETE'])
-def delete_user(phone):
+def delete_user():
     '''Function to delete user's profile with phone number as parameter'''
     request_data = request.get_json()
     if (validUserObjectDelete(request_data)):
@@ -385,5 +388,3 @@ def delete_farm():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# app.run(debug=True)
