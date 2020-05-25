@@ -23,7 +23,7 @@ class User(db.Model):
 
     # defining foreign key and relationship
     farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
-                        nullable=True)
+                        nullable=False, default=1)
     farm = db.relationship('Farm', backref=db.backref('users', lazy=True), foreign_keys=[farm_id])
     order = db.relationship('Order', backref=db.backref('user_order', lazy=True))
 
