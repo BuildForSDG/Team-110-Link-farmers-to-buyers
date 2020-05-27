@@ -1,5 +1,5 @@
 '''Module for the Order Class'''
-from FarmModel import *
+from category import *
 
 
 class Order(db.Model):

@@ -1,4 +1,5 @@
 '''Module for the Category Class'''
+from Product import *
 
 
 class Category(db.Model):
@@ -6,7 +7,7 @@ class Category(db.Model):
     __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    
+
     def json(self):
         return {'id': self.id, 'Category': self.name
                 }

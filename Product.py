@@ -1,4 +1,6 @@
 '''Module for the Product Class'''
+from FarmModel import *
+
 
 # ##  Define Relationship to Farm, so we can know which farm has which product
 class Product(db.Model):
