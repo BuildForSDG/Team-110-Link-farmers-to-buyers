@@ -13,7 +13,7 @@ class User(db.Model):
     full_name = db.Column(db.String(80), nullable=False)
     phone = db.Column(db.String(11), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(80), unique=False)
     date_created = db.Column(db.DateTime, nullable=False,
                              default=datetime.utcnow)
     role = db.Column(db.String(10), nullable=False, default='Buyer')
