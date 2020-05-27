@@ -1,9 +1,1 @@
-# FILES
-**/**/.pyc
-.DS_Store
-
-# DIRECTORIES
-**/**/__pycache__
-.vscode/
-.pytest_cache
-src.egg-info
+env
