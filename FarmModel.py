@@ -1,11 +1,11 @@
 '''Module for the Farm Class'''
-from UserModel import *
+from categoryModel import *
 
 
 class Farm(db.Model):
     '''Farm class with table farm'''
     __tablename__ = 'farm'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     farm_name = db.Column(db.String(80))
     farm_location = db.Column(db.String(80))
 
@@ -42,6 +42,34 @@ class Farm(db.Model):
                 farmer = i[1]
                 return_value["farmers"].append(farmer)
         return return_value
+
+    def getFarmProducts(_farm_id):  
+        '''function to show all products owned by a farm
+           using category as parameter'''
+        farm = Farm.query.filter_by(id=_farm_id).first()
+        # filter by farm id
+        farm_name = farm.farm_name  # name of farm
+        farm_location = farm.farm_location  # farm location
+        query = db.session.query(Farm.id, Product.id)
+        # display output with farm id and product id
+        query = query.outerjoin(Product, Farm.id == Product.farm_id)
+        query = query.all()
+        # leftjoin Farm table with Product table based on foreign key Farm.id
+        return_value = {"farm_name": farm_name,
+                        "farm_location": farm_location,
+                        "products": []}
+        # output should be json containing farm name,
+        # farm location and all products id belonging to that farm
+        for i in query:
+            if i[0] == _farm_id:
+                # if the key of the dict is equal to our parameter _farm_id
+                product = i[1]
+                # then the product we need is the value of that key
+                return_value["products"].append(product)
+                # while looping through, add the matching product
+                # to our product list in the return value dict
+        return return_value
+
 
     def getFarm(_id):
         '''function to get a farm detail using id as parameter'''

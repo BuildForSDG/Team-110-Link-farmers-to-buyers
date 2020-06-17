@@ -1,5 +1,5 @@
 '''Module for the Product Class'''
-from FarmModel import *
+from UserModel import *
 
 
 # ##  Define Relationship to Farm, so we can know which farm has which product
@@ -8,18 +8,29 @@ class Product(db.Model):
     __tablename__ = 'product'
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String(80), nullable=False)
-    price = db.Column(db.Numeric(10,2), nullable=False) # what (10, 2) means
+    price = db.Column(db.Integer, nullable=False)  
     stock = db.Column(db.Integer, nullable=False)
     desc = db.Column(db.Text, nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False,
-                             default=datetime.utcnow)
+                         default=datetime.utcnow)
 
     # many to one relationship with category table
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
-                        nullable=False)
+                            nullable=False)
     category = db.relationship('Category',
                                backref=db.backref('product', lazy=True),
                                foreign_keys=[category_id])
+
+    # many to one relationship with farm table
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
+                        nullable=False)
+    farm = db.relationship('Farm',
+                           backref=db.backref('product', lazy=True),
+                           foreign_keys=[farm_id])
+
+    # one to many relationship with orderItem table
+    orderItem = db.relationship('OrderItem',
+                                backref=db.backref('product', lazy=True))
 
     # images of products
     image_1 = db.Column(db.String(150), nullable=False,
@@ -28,25 +39,28 @@ class Product(db.Model):
                         default='image.jpg')
     image_3 = db.Column(db.String(150), nullable=False,
                         default='image.jpg')
-    
-    
+
+
     def json(self):
         return {'id': self.id, 'product_name': self.product_name,
                 'price': self.price, 'stock': self.stock,
-                'description': self.desc, 'pub_date': self.pub_date,
+                'description': self.desc,
                 'category': self.category.name,
+                'farm': self.farm.farm_name,
+                'date added': str(self.pub_date),
                 'image_1': self.image_1,
                 'image_2': self.image_2,
                 'image_3': self.image_3
                 }
 
     def add_Product(_product_name, _price, _stock, _desc, _category_id,
-                    _image_1, _image_2, _image_3):
-        '''fuction to add product to the database'''
+                    _farm_id, _image_1, _image_2, _image_3):
+        '''function to add product to the database'''
         new_product = Product(product_name=_product_name,
                               price=_price, stock=_stock, desc=_desc,
-                              category_id=_category_id, image_1=_image_1,
-                              image_2=_image_2, image_3=_image_3)
+                              category_id=_category_id, farm_id=_farm_id,
+                              image_1=_image_1, image_2=_image_2,
+                              image_3=_image_3)
 
         db.session.add(new_product)  # add new product to database
         db.session.commit()   # committing changes
@@ -55,9 +69,9 @@ class Product(db.Model):
         '''function to view all products in the database'''
         return [Product.json(i) for i in Product.query.all()]
 
-    def getFarmProduct(_farm_id):
-        '''function to get all farm's products using farm id as parameter'''
-        return Product.query.filter_by(farm_id=_farm_id).all()
+    def getProduct(_product_id):
+        '''function to get farm's product using product id as parameter'''
+        return Product.json(Product.query.filter_by(id=_product_id).first())
 
     def editProduct(_id, _product_name, _price, _stock, _desc, _category_id,
                     _image_1, _image_2, _image_3):

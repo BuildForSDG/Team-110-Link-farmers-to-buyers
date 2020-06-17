@@ -9,7 +9,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     '''User class with table user'''
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(80), nullable=False)
     phone = db.Column(db.String(11), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
@@ -24,8 +24,11 @@ class User(db.Model):
     # defining foreign key and relationship
     farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'),
                         nullable=False, default=1)
-    farm = db.relationship('Farm', backref=db.backref('users', lazy=True), foreign_keys=[farm_id])
-    order = db.relationship('Order', backref=db.backref('user_order', lazy=True))
+    farm = db.relationship('Farm',
+                           backref=db.backref('users', lazy=True),
+                           foreign_keys=[farm_id])
+    order = db.relationship('Order', backref=db.backref('user_order',
+                                                        lazy=True))
 
 
     def json(self):
